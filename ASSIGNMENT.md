@@ -87,10 +87,11 @@ stronger proof than a manual screenshot because they run on every future
 change:
 
 1. **Focus Pod card / Unavailable indicator** — `test/widget_test.dart`
-   pumps `ConferenceHubApp` and asserts the `'Focus Time (1:1 Feedback)'`
-   card is present and that the literal text `'Unavailable'` is rendered
-   (the new conditional chip in `RoomBookingCard`, only shown when
-   `!room.isAvailable`).
+   pumps `ConferenceHubApp` and asserts the `'Deep Work Session'` card
+   (Day 2 renamed this from the original `'Focus Time (1:1 Feedback)'`
+   booking during the `ListView.builder` refactor) is present and that the
+   literal text `'Unavailable'` is rendered by `RoomStatusBadge`, which is
+   only red/"Unavailable" when `!room.isAvailable`.
 2. **canFit chips (green vs red)** — the same test asserts both
    `'Fits 8 people'` (green chip, Engineering Standup vs its
    `requiredHeadcount`) and `'Too small'` (red chip, New Hire Onboarding
