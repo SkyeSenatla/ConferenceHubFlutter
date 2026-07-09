@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/bookings_screen.dart';
 
 void main() {
-  runApp(const ConferenceHubApp());
+  runApp(const ProviderScope(child: ConferenceHubApp()));
 }
 
 class ConferenceHubApp extends StatelessWidget {

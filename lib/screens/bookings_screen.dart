@@ -1,135 +1,124 @@
 import 'package:flutter/material.dart';
-import '../models/room.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/booking.dart';
+import '../providers/bookings_provider.dart';
 import '../widgets/room_booking_card.dart';
 
-// The full-page view the user sees when the app opens.
-// Scaffold gives us the standard app-bar + body layout for free.
-class BookingsScreen extends StatelessWidget {
+class BookingsScreen extends ConsumerWidget {
   const BookingsScreen({super.key});
-
-  // Not `const` -- Room.underMaintenance() (used by the last booking below)
-  // isn't a const constructor, so the list itself can only be `final`.
-  static final _bookings = <_Booking>[
-    _Booking(
-      meetingTitle: 'Engineering Standup',
-      room: const Room(
-        name: 'Boardroom A',
-        capacity: 12,
-        floor: 'Floor 3',
-        type: RoomType.boardroom,
-      ),
-      startTime: '09:00',
-      endTime: '09:30',
-      organiser: 'Skye Dlamini',
-      requiredHeadcount: 8, // fits -- green chip
-    ),
-    _Booking(
-      meetingTitle: 'New Hire Onboarding',
-      room: const Room(
-        name: 'Training Room 1',
-        capacity: 20,
-        floor: 'Floor 1',
-        type: RoomType.trainingRoom,
-      ),
-      startTime: '10:00',
-      endTime: '12:00',
-      organiser: 'HR Team',
-      requiredHeadcount: 25, // too big -- red chip
-    ),
-    _Booking(
-      meetingTitle: 'Q3 Sprint Planning',
-      room: const Room(
-        name: 'Boardroom B',
-        capacity: 10,
-        floor: 'Floor 3',
-        type: RoomType.boardroom,
-      ),
-      startTime: '13:00',
-      endTime: '14:00',
-      organiser: 'Product Team',
-      requiredHeadcount: 10, // fits exactly -- green chip
-    ),
-    _Booking(
-      meetingTitle: 'Deep Work Session',
-      room: Room.underMaintenance(
-        name: 'Focus Pod 1',
-        capacity: 2,
-        floor: 'Floor 2',
-        type: RoomType.focusPod,
-      ),
-      startTime: '14:00',
-      endTime: '16:00',
-      organiser: 'Dev Team',
-      requiredHeadcount: 1, // unavailable, so this still reads "Too small"
-    ),
-  ];
-
-  // Builds one card for the item at `index`. Passed by reference to
-  // ListView.builder/GridView.builder below -- both only call this for
-  // items currently visible on screen (lazy rendering).
-  Widget _buildCard(BuildContext context, int index) {
-    final booking = _bookings[index];
-    return RoomBookingCard(
-      meetingTitle: booking.meetingTitle,
-      room: booking.room,
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      organiser: booking.organiser,
-      requiredHeadcount: booking.requiredHeadcount,
-    );
-  }
-
+  // The filter chip labels. They match room.type.displayName exactly
+  // so the filter logic in filteredBookingsProvider can compare strings directly.
+  static const _filterOptions = ['All', 'Boardroom', 'Training', 'Focus Pod'];
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // ref.watch subscribes this widget to both providers.
+    // When either changes, build() runs again -- only this widget, nothing else.
+    final asyncBookings = ref.watch(filteredBookingsProvider);
+    final selectedFilter = ref.watch(selectedFilterProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('ConferenceHub'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      // LayoutBuilder responds to the space actually given to this widget --
-      // a two-column grid on medium+ widths (tablets, landscape), a single
-      // scrolling list below that (phones in portrait).
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth >= 600) {
-            return GridView.builder(
-              padding: const EdgeInsets.all(8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.4,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Filter chip row -- horizontally scrollable so it works on narrow phones.
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: _filterOptions.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(option),
+                    selected: selectedFilter == option,
+                    // ref.read inside a callback -- one-time write, not a subscription.
+                    onSelected: (_) {
+                      ref.read(selectedFilterProvider.notifier).state = option;
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          // The booking list fills whatever space is left after the filter row.
+          Expanded(
+            child: asyncBookings.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.wifi_off_outlined,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Could not load bookings',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    FilledButton.tonal(
+                      // invalidate forces bookingsProvider to rebuild from scratch.
+                      onPressed: () => ref.invalidate(bookingsProvider),
+                      child: const Text('Try again'),
+                    ),
+                  ],
+                ),
               ),
-              itemCount: _bookings.length,
-              itemBuilder: _buildCard,
-            );
-          }
-          return ListView.builder(
-            itemCount: _bookings.length,
-            itemBuilder: _buildCard,
-          );
-        },
+              data: (bookings) {
+                if (bookings.isEmpty) {
+                  return const Center(
+                    child: Text('No bookings match this filter.'),
+                  );
+                }
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth >= 600) {
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(8),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 1.4,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                            ),
+                        itemCount: bookings.length,
+                        itemBuilder: (context, index) =>
+                            _buildCard(context, index, bookings),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: bookings.length,
+                      itemBuilder: (context, index) =>
+                          _buildCard(context, index, bookings),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
-}
 
-// Private to this file (leading underscore) -- not a public model, just a
-// holder for the screen's own hardcoded data. The real public model is Room.
-class _Booking {
-  final String meetingTitle;
-  final Room room;
-  final String startTime;
-  final String endTime;
-  final String organiser;
-  final int requiredHeadcount;
-
-  const _Booking({
-    required this.meetingTitle,
-    required this.room,
-    required this.startTime,
-    required this.endTime,
-    required this.organiser,
-    required this.requiredHeadcount,
-  });
+  // buildCard now accepts the bookings list as a parameter because the list
+  // comes from the provider, not a static field on this class.
+  Widget _buildCard(BuildContext context, int index, List<Booking> bookings) {
+    final booking = bookings[index];
+    return RoomBookingCard(
+      meetingTitle: booking.meetingTitle,
+      room: booking.room,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      organiser: booking.organiserEmail,
+      requiredHeadcount: booking.requiredHeadcount,
+    );
+  }
 }
