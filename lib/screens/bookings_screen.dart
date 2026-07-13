@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../models/booking.dart';
 import '../providers/bookings_provider.dart';
 import '../widgets/room_booking_card.dart';
@@ -112,13 +113,18 @@ class BookingsScreen extends ConsumerWidget {
   // comes from the provider, not a static field on this class.
   Widget _buildCard(BuildContext context, int index, List<Booking> bookings) {
     final booking = bookings[index];
-    return RoomBookingCard(
-      meetingTitle: booking.meetingTitle,
-      room: booking.room,
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      organiser: booking.organiserEmail,
-      requiredHeadcount: booking.requiredHeadcount,
+    // Navigate with the booking's stable id, never the list index -- the
+    // index shifts whenever the filter changes, but the id never does.
+    return GestureDetector(
+      onTap: () => context.push('/bookings/${booking.id}'),
+      child: RoomBookingCard(
+        meetingTitle: booking.meetingTitle,
+        room: booking.room,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        organiser: booking.organiserEmail,
+        requiredHeadcount: booking.requiredHeadcount,
+      ),
     );
   }
 }

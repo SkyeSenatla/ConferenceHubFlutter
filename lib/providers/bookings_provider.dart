@@ -8,6 +8,7 @@ import '../models/room.dart';
 // --------------------------------------------------------------------------
 final _allBookings = <Booking>[
   const Booking(
+    id: 1,
     meetingTitle: 'Engineering Standup',
     room: Room(
       name: 'Boardroom A',
@@ -21,6 +22,7 @@ final _allBookings = <Booking>[
     requiredHeadcount: 8,
   ),
   const Booking(
+    id: 2,
     meetingTitle: 'New Hire Onboarding',
     room: Room(
       name: 'Training Room 1',
@@ -34,6 +36,7 @@ final _allBookings = <Booking>[
     requiredHeadcount: 25,
   ),
   const Booking(
+    id: 3,
     meetingTitle: 'Q3 Sprint Planning',
     room: Room(
       name: 'Boardroom B',
@@ -47,6 +50,7 @@ final _allBookings = <Booking>[
     requiredHeadcount: 10,
   ),
   Booking(
+    id: 4,
     meetingTitle: 'Deep Work Session',
     room: Room.underMaintenance(
       name: 'Focus Pod 1',

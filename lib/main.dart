@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'screens/bookings_screen.dart';
+import 'router/app_router.dart';
 
 void main() {
   runApp(const ProviderScope(child: ConferenceHubApp()));
@@ -8,9 +8,10 @@ void main() {
 
 class ConferenceHubApp extends StatelessWidget {
   const ConferenceHubApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'ConferenceHub',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
@@ -24,7 +25,7 @@ class ConferenceHubApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
-      home: const BookingsScreen(),
+      routerConfig: appRouter,
     );
   }
 }
