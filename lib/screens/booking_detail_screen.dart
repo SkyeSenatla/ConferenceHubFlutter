@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/room.dart';
-import '../providers/bookings_provider.dart';
+import '../providers/bookings_notifier.dart';
 
 class BookingDetailScreen extends ConsumerWidget {
-  final int bookingId;
+  // Booking ids are Guids from the API, so this is a String, not an int.
+  final String bookingId;
 
   const BookingDetailScreen({super.key, required this.bookingId});
 

@@ -76,4 +76,21 @@ class Room {
         : 'Cannot fit $headcount people';
     return '${toString()} | $fitDescription';
   }
+
+  static RoomType _inferType(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('board')) return RoomType.boardroom;
+    if (lower.contains('train')) return RoomType.trainingRoom;
+    return RoomType.focusPod;
+  }
+
+  factory Room.fromJson(Map<String, dynamic> json) {
+    return Room(
+      name: json['name'] as String,
+      capacity: json['capacity'] as int,
+      floor: json['floor'] as String,
+      type: _inferType(json['name'] as String),
+      isAvailable: json['isAvailable'] as bool,
+    );
+  }
 }

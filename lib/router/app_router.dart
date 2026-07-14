@@ -22,7 +22,11 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: ':id',
                   builder: (context, state) {
-                    final id = int.parse(state.pathParameters['id']!);
+                    // Booking ids are Guids from the API -- always String.
+                    // Path parameters are always String too, so no parsing
+                    // is needed here anymore (contrast with the int.parse
+                    // this used before the API migration).
+                    final id = state.pathParameters['id']!;
                     return BookingDetailScreen(bookingId: id);
                   },
                 ),

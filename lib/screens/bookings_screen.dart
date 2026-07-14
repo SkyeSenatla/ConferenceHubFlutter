@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/booking.dart';
+import '../providers/bookings_notifier.dart';
 import '../providers/bookings_provider.dart';
 import '../widgets/room_booking_card.dart';
 
@@ -64,7 +65,9 @@ class BookingsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     FilledButton.tonal(
-                      // invalidate forces bookingsProvider to rebuild from scratch.
+                      // invalidate forces bookingsProvider (generated from
+                      // BookingsNotifier) to rebuild from scratch, i.e.
+                      // re-fetch from the API.
                       onPressed: () => ref.invalidate(bookingsProvider),
                       child: const Text('Try again'),
                     ),

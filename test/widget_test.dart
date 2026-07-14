@@ -1,18 +1,96 @@
-// Smoke tests for ConferenceHub's booking list screen after Day 4 (GoRouter).
+// Smoke tests for ConferenceHub's booking list screen after Week 2, Day 1
+// (real HTTP + code generation).
 //
-// Changes from the Day 3 test:
-// 1. Physical size raised from 2800 to 2900 to accommodate the NavigationBar
-//    that StatefulShellRoute adds at the bottom of the shell.
-// 2. All existing assertions are unchanged -- GoRouter's StatefulShellRoute
-//    keeps both tab screens in the widget tree (IndexedStack), but
-//    RoomsPlaceholderScreen has no spinner and no conflicting text labels,
-//    so the Day 3 counts are still correct.
+// Changes from the Day 4 test:
+// 1. bookingsProvider now makes a real Dio call to the API. In a test
+//    environment there is no server, so the real notifier is overridden
+//    with a fake one that returns the same hardcoded dataset this test has
+//    always asserted on. No network call is made, no Dio instance is
+//    created, no HTTP permission is needed.
+// 2. NOTE: the generated provider is called `bookingsProvider`, not
+//    `bookingsNotifierProvider` -- riverpod_generator strips a trailing
+//    "Notifier" from the @riverpod class name (BookingsNotifier) when it
+//    generates the provider variable. See lib/providers/bookings_notifier.g.dart.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:conferencebookingsystemflutter/main.dart';
+import 'package:conferencebookingsystemflutter/models/booking.dart';
+import 'package:conferencebookingsystemflutter/models/room.dart';
+import 'package:conferencebookingsystemflutter/providers/bookings_notifier.dart';
+
+// -- Fake notifier -----------------------------------------------------------
+// Returns the same hardcoded dataset the widget test has always asserted on.
+// No network call is made. No Dio instance is created. No HTTP permission needed.
+class _FakeBookingsNotifier extends BookingsNotifier {
+  @override
+  Future<List<Booking>> build() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    return _fakeBookings;
+  }
+}
+
+final _fakeBookings = <Booking>[
+  const Booking(
+    id: '1',
+    meetingTitle: 'Engineering Standup',
+    room: Room(
+      name: 'Boardroom A',
+      capacity: 12,
+      floor: 'Floor 3',
+      type: RoomType.boardroom,
+    ),
+    startTime: '09:00',
+    endTime: '09:30',
+    organiserEmail: 'Skye Dlamini',
+    requiredHeadcount: 8,
+  ),
+  const Booking(
+    id: '2',
+    meetingTitle: 'New Hire Onboarding',
+    room: Room(
+      name: 'Training Room 1',
+      capacity: 20,
+      floor: 'Floor 1',
+      type: RoomType.trainingRoom,
+    ),
+    startTime: '10:00',
+    endTime: '12:00',
+    organiserEmail: 'HR Team',
+    requiredHeadcount: 25,
+  ),
+  const Booking(
+    id: '3',
+    meetingTitle: 'Q3 Sprint Planning',
+    room: Room(
+      name: 'Boardroom B',
+      capacity: 10,
+      floor: 'Floor 3',
+      type: RoomType.boardroom,
+    ),
+    startTime: '13:00',
+    endTime: '14:00',
+    organiserEmail: 'Product Team',
+    requiredHeadcount: 10,
+  ),
+  const Booking(
+    id: '4',
+    meetingTitle: 'Deep Work Session',
+    room: Room(
+      name: 'Focus Pod 1',
+      capacity: 2,
+      floor: 'Floor 2',
+      type: RoomType.focusPod,
+      isAvailable: false,
+    ),
+    startTime: '14:00',
+    endTime: '16:00',
+    organiserEmail: 'Dev Team',
+    requiredHeadcount: 1,
+  ),
+];
 
 void main() {
   testWidgets(
@@ -22,7 +100,17 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
 
-      await tester.pumpWidget(const ProviderScope(child: ConferenceHubApp()));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            // Replace the real notifier (which calls the API) with the fake.
+            // The UI code is untouched -- it still calls
+            // ref.watch(bookingsProvider). Only the data source changes.
+            bookingsProvider.overrideWith(_FakeBookingsNotifier.new),
+          ],
+          child: const ConferenceHubApp(),
+        ),
+      );
 
       // App bar is visible immediately.
       expect(find.text('ConferenceHub'), findsOneWidget);
@@ -32,7 +120,6 @@ void main() {
       expect(find.text('Rooms'), findsOneWidget);
 
       // During the 1.5-second simulated load, exactly one spinner is visible.
-      // RoomsPlaceholderScreen (the inactive tab) has no spinner.
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
       // Advance the fake timer past the 1500ms delay.
@@ -54,7 +141,7 @@ void main() {
       expect(find.text('Seats 10'), findsOneWidget);
       expect(find.text('Seats 2'), findsOneWidget);
 
-      // Room type labels: card chips + filter chips (counts unchanged from Day 3).
+      // Room type labels: card chips + filter chips.
       expect(find.text('Boardroom'), findsNWidgets(3));
       expect(find.text('Training'), findsNWidgets(2));
       expect(find.text('Focus Pod'), findsNWidgets(2));
