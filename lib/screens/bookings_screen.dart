@@ -65,10 +65,9 @@ class BookingsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     FilledButton.tonal(
-                      // invalidate forces bookingsProvider (generated from
-                      // BookingsNotifier) to rebuild from scratch, i.e.
-                      // re-fetch from the API.
-                      onPressed: () => ref.invalidate(bookingsProvider),
+                      // invalidate forces bookingsNotifierProvider to
+                      // rebuild from scratch, i.e. re-fetch from the API.
+                      onPressed: () => ref.invalidate(bookingsNotifierProvider),
                       child: const Text('Try again'),
                     ),
                   ],

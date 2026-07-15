@@ -16,7 +16,7 @@ class BookingDetailScreen extends ConsumerWidget {
     // had filtered to 'Boardroom' and navigated to a Focus Pod booking,
     // that booking would not exist in the filtered list. Always use the
     // source provider in a detail screen.
-    final asyncBookings = ref.watch(bookingsProvider);
+    final asyncBookings = ref.watch(bookingsNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(

@@ -10,16 +10,11 @@ enum RoomType { boardroom, trainingRoom, focusPod }
 // RoomType has no built-in human-readable label, so this extension maps
 // each enum value to the text we actually want to show in the UI.
 extension RoomTypeLabel on RoomType {
-  String get displayName {
-    switch (this) {
-      case RoomType.boardroom:
-        return 'Boardroom';
-      case RoomType.trainingRoom:
-        return 'Training';
-      case RoomType.focusPod:
-        return 'Focus Pod';
-    }
-  }
+  String get displayName => switch (this) {
+    RoomType.boardroom => 'Boardroom',
+    RoomType.trainingRoom => 'Training',
+    RoomType.focusPod => 'Focus Pod',
+  };
 }
 
 class Room {
@@ -79,9 +74,11 @@ class Room {
 
   static RoomType _inferType(String name) {
     final lower = name.toLowerCase();
-    if (lower.contains('board')) return RoomType.boardroom;
-    if (lower.contains('train')) return RoomType.trainingRoom;
-    return RoomType.focusPod;
+    return switch (lower) {
+      String s when s.contains('board') => RoomType.boardroom,
+      String s when s.contains('train') => RoomType.trainingRoom,
+      _ => RoomType.focusPod,
+    };
   }
 
   factory Room.fromJson(Map<String, dynamic> json) {

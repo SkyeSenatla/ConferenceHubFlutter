@@ -1,16 +1,15 @@
-// Smoke tests for ConferenceHub's booking list screen after Week 2, Day 1
-// (real HTTP + code generation).
+// Smoke tests for ConferenceHub's booking list screen after Week 2, Day 1+2
+// (real HTTP + code generation + Freezed/ApiResult).
 //
 // Changes from the Day 4 test:
-// 1. bookingsProvider now makes a real Dio call to the API. In a test
-//    environment there is no server, so the real notifier is overridden
-//    with a fake one that returns the same hardcoded dataset this test has
-//    always asserted on. No network call is made, no Dio instance is
-//    created, no HTTP permission is needed.
-// 2. NOTE: the generated provider is called `bookingsProvider`, not
-//    `bookingsNotifierProvider` -- riverpod_generator strips a trailing
-//    "Notifier" from the @riverpod class name (BookingsNotifier) when it
-//    generates the provider variable. See lib/providers/bookings_notifier.g.dart.
+// 1. bookingsNotifierProvider now makes a real Dio call to the API. In a
+//    test environment there is no server, so the real notifier is
+//    overridden with a fake one that returns the same hardcoded dataset
+//    this test has always asserted on. No network call is made, no Dio
+//    instance is created, no HTTP permission is needed.
+// 2. The fake notifier bypasses ApiResult entirely -- it overrides build()
+//    directly with a List<Booking>, the same shape Riverpod expects,
+//    without ever calling the repository.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,8 +104,8 @@ void main() {
           overrides: [
             // Replace the real notifier (which calls the API) with the fake.
             // The UI code is untouched -- it still calls
-            // ref.watch(bookingsProvider). Only the data source changes.
-            bookingsProvider.overrideWith(_FakeBookingsNotifier.new),
+            // ref.watch(bookingsNotifierProvider). Only the data source changes.
+            bookingsNotifierProvider.overrideWith(_FakeBookingsNotifier.new),
           ],
           child: const ConferenceHubApp(),
         ),

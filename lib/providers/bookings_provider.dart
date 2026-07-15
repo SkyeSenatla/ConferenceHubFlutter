@@ -1,8 +1,8 @@
+// NOTE: this project pins flutter_riverpod to the 2.x line, where
+// StateProvider and Provider both live in the main flutter_riverpod.dart
+// barrel -- no separate "legacy" import needed (that split is a Riverpod
+// 3.0+ thing).
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// StateProvider was moved out of the main flutter_riverpod.dart barrel in
-// Riverpod 3.0 -- it now lives in this "legacy" import alongside Provider's
-// other classic (non-code-gen) provider types.
-import 'package:flutter_riverpod/legacy.dart';
 import '../models/booking.dart';
 import '../models/room.dart';
 import 'bookings_notifier.dart';
@@ -14,12 +14,13 @@ final selectedFilterProvider = StateProvider<String>((ref) => 'All');
 // Watches the raw bookings from the notifier and the selected filter chip.
 // When either changes, this provider recomputes automatically.
 //
-// NOTE: riverpod_generator strips a trailing "Notifier" from the class name
-// when it generates the provider variable, so @riverpod class
-// BookingsNotifier produces `bookingsProvider`, not `bookingsNotifierProvider`.
-// See lib/providers/bookings_notifier.g.dart.
+// NOTE: with riverpod_generator's 2.x line (pinned in this project), the
+// generated provider keeps the full class name -- @riverpod class
+// BookingsNotifier produces `bookingsNotifierProvider`. (Generator 4.x
+// strips a trailing "Notifier" instead; always check the actual .g.dart
+// file rather than assume a naming convention.)
 final filteredBookingsProvider = Provider<AsyncValue<List<Booking>>>((ref) {
-  final asyncBookings = ref.watch(bookingsProvider);
+  final asyncBookings = ref.watch(bookingsNotifierProvider);
   final filter = ref.watch(selectedFilterProvider);
   return asyncBookings.whenData((bookings) {
     if (filter == 'All') return bookings;

@@ -1,27 +1,27 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'room.dart';
 import '../data/booking_dto.dart';
 
-class Booking {
+part 'booking.freezed.dart';
+
+@freezed
+class Booking with _$Booking {
+  const Booking._();
+
   // Changed from int to String -- the API uses Guid identifiers.
   // GoRouter path parameters are always String, so this also removes
   // the int.parse call in the router.
-  final String id;
-  final String meetingTitle;
-  final Room room;
-  final String startTime;
-  final String endTime;
-  final String organiserEmail;
-  final int requiredHeadcount;
-  const Booking({
-    required this.id,
-    required this.meetingTitle,
-    required this.room,
-    required this.startTime,
-    required this.endTime,
-    required this.organiserEmail,
-    required this.requiredHeadcount,
-  });
-  factory Booking.fromDto(BookingDto dto, Room room) {
+  const factory Booking({
+    required String id,
+    required String meetingTitle,
+    required Room room,
+    required String startTime,
+    required String endTime,
+    required String organiserEmail,
+    required int requiredHeadcount,
+  }) = _Booking;
+
+  static Booking fromDto(BookingDto dto, Room room) {
     return Booking(
       id: dto.id,
       meetingTitle: dto.title,
@@ -32,6 +32,7 @@ class Booking {
       requiredHeadcount: dto.attendeeCount,
     );
   }
+
   static String _formatTime(DateTime dt) {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
