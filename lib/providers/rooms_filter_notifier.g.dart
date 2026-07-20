@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'bookings_notifier.dart';
+part of 'rooms_filter_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bookingsNotifierHash() => r'6422f347901ff48950357e92bb07149006bc8f53';
+String _$roomsFilterNotifierHash() =>
+    r'6c2a60ea95737713c9c583ab4b187d6ace9ee07f';
 
-/// See also [BookingsNotifier].
-@ProviderFor(BookingsNotifier)
-final bookingsNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<BookingsNotifier, List<Booking>>.internal(
-      BookingsNotifier.new,
-      name: r'bookingsNotifierProvider',
+/// See also [RoomsFilterNotifier].
+@ProviderFor(RoomsFilterNotifier)
+final roomsFilterNotifierProvider =
+    AutoDisposeNotifierProvider<RoomsFilterNotifier, bool>.internal(
+      RoomsFilterNotifier.new,
+      name: r'roomsFilterNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$bookingsNotifierHash,
+          : _$roomsFilterNotifierHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$BookingsNotifier = AutoDisposeAsyncNotifier<List<Booking>>;
+typedef _$RoomsFilterNotifier = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

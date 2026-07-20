@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import '../screens/bookings_screen.dart';
 import '../screens/booking_detail_screen.dart';
-import '../screens/rooms_placeholder_screen.dart';
+import '../screens/rooms_screen.dart';
 import '../widgets/scaffold_with_nav_bar.dart';
 
 final appRouter = GoRouter(
@@ -39,7 +39,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/rooms',
-              builder: (context, state) => const RoomsPlaceholderScreen(),
+              builder: (context, state) => const RoomsScreen(),
             ),
           ],
         ),
