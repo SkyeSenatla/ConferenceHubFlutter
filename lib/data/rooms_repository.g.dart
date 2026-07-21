@@ -6,20 +6,47 @@ part of 'rooms_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$roomsRepositoryHash() => r'21a2b46c9532fa41aef1a478379b850da14da524';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [roomsRepository].
 @ProviderFor(roomsRepository)
-final roomsRepositoryProvider = AutoDisposeProvider<RoomsRepository>.internal(
-  roomsRepository,
-  name: r'roomsRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$roomsRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final roomsRepositoryProvider = RoomsRepositoryProvider._();
 
-typedef RoomsRepositoryRef = AutoDisposeProviderRef<RoomsRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class RoomsRepositoryProvider
+    extends
+        $FunctionalProvider<RoomsRepository, RoomsRepository, RoomsRepository>
+    with $Provider<RoomsRepository> {
+  RoomsRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'roomsRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$roomsRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<RoomsRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  RoomsRepository create(Ref ref) {
+    return roomsRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RoomsRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RoomsRepository>(value),
+    );
+  }
+}
+
+String _$roomsRepositoryHash() => r'21a2b46c9532fa41aef1a478379b850da14da524';

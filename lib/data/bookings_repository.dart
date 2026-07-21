@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // Ref comes from plain riverpod, not flutter_riverpod -- this file is data
 // layer, not UI, so it shouldn't need Flutter (and importing
 // flutter_riverpod here pulls in dart:ui, which breaks plain `dart run`
@@ -7,7 +8,9 @@ import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/booking.dart';
 import '../models/room.dart';
+import '../providers/auth_provider.dart';
 import 'api_result.dart';
+import 'auth_interceptor.dart';
 import 'booking_dto.dart';
 
 part 'bookings_repository.g.dart';
@@ -36,6 +39,12 @@ Dio dio(Ref ref) {
   // kDebugMode or an environment flag so it is absent from release builds.
   client.interceptors.add(
     LogInterceptor(requestBody: false, responseBody: false),
+  );
+  client.interceptors.add(
+    AuthInterceptor(
+      storage: const FlutterSecureStorage(),
+      onUnauthenticated: ref.read(onUnauthenticatedProvider),
+    ),
   );
   return client;
 }

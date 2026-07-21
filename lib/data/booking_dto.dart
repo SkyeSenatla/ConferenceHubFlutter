@@ -8,7 +8,7 @@ part 'booking_dto.freezed.dart';
 part 'booking_dto.g.dart';
 
 @freezed
-class BookingDto with _$BookingDto {
+abstract class BookingDto with _$BookingDto {
   const factory BookingDto({
     required String id,
     required String title,

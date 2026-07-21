@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/booking.dart';
+import '../providers/auth_notifier.dart';
 import '../providers/bookings_notifier.dart';
 import '../providers/bookings_provider.dart';
+import '../providers/rooms_notifier.dart';
 import '../widgets/room_booking_card.dart';
 
 class BookingsScreen extends ConsumerWidget {
@@ -21,6 +23,22 @@ class BookingsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('ConferenceHub'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign out',
+            onPressed: () {
+              // Invalidate data providers before calling logout(). If
+              // logout() ran first, auth state would flip to
+              // Unauthenticated, GoRouter would redirect, and Riverpod
+              // would tear down this widget tree -- disposing these
+              // providers incidentally rather than intentionally.
+              ref.invalidate(bookingsProvider);
+              ref.invalidate(roomsProvider);
+              ref.read(authProvider.notifier).logout();
+            },
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,9 +83,9 @@ class BookingsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     FilledButton.tonal(
-                      // invalidate forces bookingsNotifierProvider to
+                      // invalidate forces bookingsProvider to
                       // rebuild from scratch, i.e. re-fetch from the API.
-                      onPressed: () => ref.invalidate(bookingsNotifierProvider),
+                      onPressed: () => ref.invalidate(bookingsProvider),
                       child: const Text('Try again'),
                     ),
                   ],

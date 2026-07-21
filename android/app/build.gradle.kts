@@ -24,7 +24,9 @@ android {
         applicationId = "com.conferencehub.conferencebookingsystemflutter"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // flutter_secure_storage uses EncryptedSharedPreferences on Android, which
+        // requires API 23 (Android 6.0) for the Keystore APIs that generate the key.
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

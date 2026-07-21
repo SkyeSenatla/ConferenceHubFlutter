@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'rooms_notifier.dart';
+part of 'auth_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,43 +9,43 @@ part of 'rooms_notifier.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(RoomsNotifier)
-final roomsProvider = RoomsNotifierProvider._();
+@ProviderFor(AuthNotifier)
+final authProvider = AuthNotifierProvider._();
 
-final class RoomsNotifierProvider
-    extends $AsyncNotifierProvider<RoomsNotifier, List<Room>> {
-  RoomsNotifierProvider._()
+final class AuthNotifierProvider
+    extends $AsyncNotifierProvider<AuthNotifier, AuthState> {
+  AuthNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'roomsProvider',
+        name: r'authProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$roomsNotifierHash();
+  String debugGetCreateSourceHash() => _$authNotifierHash();
 
   @$internal
   @override
-  RoomsNotifier create() => RoomsNotifier();
+  AuthNotifier create() => AuthNotifier();
 }
 
-String _$roomsNotifierHash() => r'8a953545ec04fad61cff431b45591d3714248bfe';
+String _$authNotifierHash() => r'595564460e78b2ba703d7a583728dc8fd65cd0ba';
 
-abstract class _$RoomsNotifier extends $AsyncNotifier<List<Room>> {
-  FutureOr<List<Room>> build();
+abstract class _$AuthNotifier extends $AsyncNotifier<AuthState> {
+  FutureOr<AuthState> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<List<Room>>, List<Room>>;
+    final ref = this.ref as $Ref<AsyncValue<AuthState>, AuthState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<List<Room>>, List<Room>>,
-              AsyncValue<List<Room>>,
+              AnyNotifier<AsyncValue<AuthState>, AuthState>,
+              AsyncValue<AuthState>,
               Object?,
               Object?
             >;

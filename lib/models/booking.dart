@@ -5,7 +5,7 @@ import '../data/booking_dto.dart';
 part 'booking.freezed.dart';
 
 @freezed
-class Booking with _$Booking {
+abstract class Booking with _$Booking {
   const Booking._();
 
   // Changed from int to String -- the API uses Guid identifiers.

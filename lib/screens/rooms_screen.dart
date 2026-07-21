@@ -10,9 +10,9 @@ class RoomsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncRooms = ref.watch(roomsNotifierProvider);
+    final asyncRooms = ref.watch(roomsProvider);
     final isOffline = ref.watch(isOfflineProvider);
-    final showAvailableOnly = ref.watch(roomsFilterNotifierProvider);
+    final showAvailableOnly = ref.watch(roomsFilterProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +31,7 @@ class RoomsScreen extends ConsumerWidget {
                 Switch(
                   value: showAvailableOnly,
                   onChanged: (_) =>
-                      ref.read(roomsFilterNotifierProvider.notifier).toggle(),
+                      ref.read(roomsFilterProvider.notifier).toggle(),
                 ),
               ],
             ),
@@ -81,7 +81,7 @@ class RoomsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     FilledButton.tonal(
-                      onPressed: () => ref.invalidate(roomsNotifierProvider),
+                      onPressed: () => ref.invalidate(roomsProvider),
                       child: const Text('Try again'),
                     ),
                   ],

@@ -2,7 +2,7 @@
 // (real HTTP + code generation + Freezed/ApiResult).
 //
 // Changes from the Day 4 test:
-// 1. bookingsNotifierProvider now makes a real Dio call to the API. In a
+// 1. bookingsProvider now makes a real Dio call to the API. In a
 //    test environment there is no server, so the real notifier is
 //    overridden with a fake one that returns the same hardcoded dataset
 //    this test has always asserted on. No network call is made, no Dio
@@ -16,8 +16,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:conferencebookingsystemflutter/main.dart';
+import 'package:conferencebookingsystemflutter/models/auth_state.dart';
 import 'package:conferencebookingsystemflutter/models/booking.dart';
 import 'package:conferencebookingsystemflutter/models/room.dart';
+import 'package:conferencebookingsystemflutter/models/user.dart';
+import 'package:conferencebookingsystemflutter/providers/auth_notifier.dart';
 import 'package:conferencebookingsystemflutter/providers/bookings_notifier.dart';
 
 // -- Fake notifier -----------------------------------------------------------
@@ -28,6 +31,17 @@ class _FakeBookingsNotifier extends BookingsNotifier {
   Future<List<Booking>> build() async {
     await Future.delayed(const Duration(milliseconds: 1500));
     return _fakeBookings;
+  }
+}
+
+// Auth now gates every screen behind /login, so the widget test needs a
+// fake AuthNotifier that resolves straight to Authenticated -- otherwise
+// GoRouter's redirect sends the test to the login screen instead of
+// bookings, and none of the assertions below would find their targets.
+class _FakeAuthNotifier extends AuthNotifier {
+  @override
+  Future<AuthState> build() async {
+    return const Authenticated(user: User(username: 'testuser', role: 'Employee'));
   }
 }
 
@@ -104,8 +118,9 @@ void main() {
           overrides: [
             // Replace the real notifier (which calls the API) with the fake.
             // The UI code is untouched -- it still calls
-            // ref.watch(bookingsNotifierProvider). Only the data source changes.
-            bookingsNotifierProvider.overrideWith(_FakeBookingsNotifier.new),
+            // ref.watch(bookingsProvider). Only the data source changes.
+            bookingsProvider.overrideWith(_FakeBookingsNotifier.new),
+            authProvider.overrideWith(_FakeAuthNotifier.new),
           ],
           child: const ConferenceHubApp(),
         ),

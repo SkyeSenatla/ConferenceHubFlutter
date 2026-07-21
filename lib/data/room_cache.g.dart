@@ -31,6 +31,7 @@ const RoomCacheSchema = CollectionSchema(
       type: IsarType.string,
     ),
   },
+
   estimateSize: _roomCacheEstimateSize,
   serialize: _roomCacheSerialize,
   deserialize: _roomCacheDeserialize,
@@ -39,10 +40,11 @@ const RoomCacheSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {},
+
   getId: _roomCacheGetId,
   getLinks: _roomCacheGetLinks,
   attach: _roomCacheAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _roomCacheEstimateSize(
