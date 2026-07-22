@@ -22,6 +22,7 @@ import 'package:conferencebookingsystemflutter/models/room.dart';
 import 'package:conferencebookingsystemflutter/models/user.dart';
 import 'package:conferencebookingsystemflutter/providers/auth_notifier.dart';
 import 'package:conferencebookingsystemflutter/providers/bookings_notifier.dart';
+import 'package:conferencebookingsystemflutter/widgets/bookings_shimmer.dart';
 
 // -- Fake notifier -----------------------------------------------------------
 // Returns the same hardcoded dataset the widget test has always asserted on.
@@ -133,15 +134,16 @@ void main() {
       expect(find.text('Bookings'), findsOneWidget);
       expect(find.text('Rooms'), findsOneWidget);
 
-      // During the 1.5-second simulated load, exactly one spinner is visible.
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      // During the 1.5-second simulated load, the shimmer skeleton is
+      // visible instead of a spinner.
+      expect(find.byType(BookingsShimmer), findsOneWidget);
 
       // Advance the fake timer past the 1500ms delay.
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
 
-      // Spinner is gone.
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      // Shimmer is gone.
+      expect(find.byType(BookingsShimmer), findsNothing);
 
       // All four meetings render.
       expect(find.text('Engineering Standup'), findsOneWidget);

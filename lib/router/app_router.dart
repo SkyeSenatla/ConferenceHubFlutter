@@ -6,6 +6,7 @@ import '../providers/auth_notifier.dart';
 import '../providers/auth_provider.dart';
 import '../screens/bookings_screen.dart';
 import '../screens/booking_detail_screen.dart';
+import '../screens/create_booking_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/rooms_screen.dart';
 import '../widgets/scaffold_with_nav_bar.dart';
@@ -45,6 +46,13 @@ GoRouter appRouter(Ref ref) {
                 path: '/bookings',
                 builder: (context, state) => const BookingsScreen(),
                 routes: [
+                  // Must come before :id -- GoRouter matches routes in
+                  // declaration order, so /bookings/new would otherwise
+                  // match :id with id='new' and open a BookingDetailScreen.
+                  GoRoute(
+                    path: 'new',
+                    builder: (context, state) => const CreateBookingScreen(),
+                  ),
                   // Child route: booking detail -- /bookings/:id
                   GoRoute(
                     path: ':id',

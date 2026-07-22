@@ -1,34 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../models/auth_state.dart';
 import '../providers/auth_notifier.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
+class LoginScreen extends HookConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // useTextEditingController creates a controller once and disposes it
+    // automatically when the widget unmounts -- no State class, no
+    // dispose() override, no way to forget the cleanup.
+    final usernameController = useTextEditingController();
+    final passwordController = useTextEditingController();
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final authValue = ref.watch(authProvider);
     final isLoading = authValue.value is Authenticating;
     final errorMessage = switch (authValue.value) {
       AuthError(:final message) => message,
       _ => null,
     };
+
+    void submit() {
+      ref
+          .read(authProvider.notifier)
+          .login(usernameController.text.trim(), passwordController.text);
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -53,7 +51,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 40),
               TextField(
-                controller: _usernameController,
+                controller: usernameController,
                 textInputAction: TextInputAction.next,
                 enabled: !isLoading,
                 decoration: const InputDecoration(
@@ -63,11 +61,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: _passwordController,
+                controller: passwordController,
                 obscureText: true,
                 textInputAction: TextInputAction.done,
                 enabled: !isLoading,
-                onSubmitted: (_) => _submit(),
+                onSubmitted: (_) => submit(),
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
@@ -82,7 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ],
               const SizedBox(height: 24),
               FilledButton(
-                onPressed: isLoading ? null : _submit,
+                onPressed: isLoading ? null : submit,
                 child: isLoading
                     ? const SizedBox(
                         height: 20,
@@ -96,11 +94,5 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
-  }
-
-  void _submit() {
-    ref
-        .read(authProvider.notifier)
-        .login(_usernameController.text.trim(), _passwordController.text);
   }
 }
