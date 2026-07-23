@@ -69,6 +69,10 @@ dev_dependencies:
   freezed: any
   json_serializable: any
   isar_community_generator: 3.3.2
+  mocktail: ^0.3.0
+  patrol: ^3.14.0
+  integration_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
